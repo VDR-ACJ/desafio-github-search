@@ -2,12 +2,8 @@ package br.com.igorbag.githubsearch.ui
 
 import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.view.View.OnClickListener
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -68,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     // salvar o usuario preenchido no EditText utilizando uma SharedPreferences
     private fun saveUserLocal(usuarioDigitado : String) {
         //@TODO 3 - Persistir o usuario preenchido na editText com a SharedPref no listener do botao salvar -OK
-        val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+        val sharedPref = getPreferences(Context.MODE_PRIVATE)
            with(sharedPref.edit()){
                putString(getString(R.string.sha_pref_usuario_preenchido),usuarioDigitado)
                apply()
@@ -140,18 +136,21 @@ class MainActivity : AppCompatActivity() {
         listaRepositories.apply {
             isVisible = true
             adapter = repositoryAdapter
-           /* OnClickListener{
-                shareRepositoryLink("")
-            }*/
-
         }
 
+
+        repositoryAdapter.repositoryItemLister ={
+            openBrowser(it.htmlUrl)
+        }
+        repositoryAdapter.btnShareLister = {
+            shareRepositoryLink(it.htmlUrl)
+        }
 
     }
 
 
     // Metodo responsavel por compartilhar o link do repositorio selecionado
-    // @Todo 11 - Colocar esse metodo no click do share item do adapter
+    // @Todo 11 - Colocar esse metodo no click do share item do adapter - OK
 
     fun shareRepositoryLink(urlRepository: String) {
         val sendIntent: Intent = Intent().apply {
@@ -166,7 +165,7 @@ class MainActivity : AppCompatActivity() {
 
     // Metodo responsavel por abrir o browser com o link informado do repositorio
 
-    // @Todo 12 - Colocar esse metodo no click item do adapter
+    // @Todo 12 - Colocar esse metodo no click item do adapter - OK
     fun openBrowser(urlRepository: String) {
         startActivity(
             Intent(
@@ -175,27 +174,6 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-    }
-
-    fun checkForInternet(context: Context?): Boolean {
-        val connectivityManager =
-            context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val network = connectivityManager.activeNetwork ?: return false
-            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
-
-            return when {
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                else -> false
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            val networkInfo = connectivityManager.activeNetworkInfo ?: return false
-            @Suppress("DEPRECATION")
-            return networkInfo.isConnected
-        }
     }
 
 }
