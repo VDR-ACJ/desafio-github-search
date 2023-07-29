@@ -3,4 +3,5 @@
     <string name="nome_usuario">Nome do usuário</string>
     <string name="confirmar">Confirmar</string>
     <string name="sha_pref_usuario_preenchido">usuario_preenchido</string>
+    <string name="error_response">Algo deu errado, tente novamente mais tarde</string>
 </resources>
